@@ -1,11 +1,11 @@
-import { StyleSheet, View, ScrollView } from 'react-native'
+import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native'
 import { useState, useEffect } from 'react'
 import {
   ButtonComponent,
   CheckBoxComponent,
   InputComponent,
 } from '../components'
-import { Avatar, Text, Button, TouchableRipple } from 'react-native-paper'
+import { Avatar, Text } from 'react-native-paper'
 import { COLORS } from '../constants'
 import * as ImagePicker from 'expo-image-picker'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -87,7 +87,7 @@ const ProfileScreen = () => {
               flexDirection: 'column',
             }}
           >
-            <TouchableRipple
+            <TouchableOpacity
               style={{ borderRadius: 50 }}
               onPress={() => pickImage()}
               rippleColor='rgba(0, 0, 0, .32)'
@@ -98,7 +98,7 @@ const ProfileScreen = () => {
                   image ? { uri: image } : require('../assets/avatar.jpg')
                 }
               />
-            </TouchableRipple>
+            </TouchableOpacity>
 
             <Text
               style={{ color: COLORS.secondary, fontSize: 20, marginTop: 10 }}
