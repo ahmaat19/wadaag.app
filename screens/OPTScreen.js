@@ -1,15 +1,14 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ButtonComponent, InputComponent, Logo } from '../components'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { COLORS } from '../constants'
 import { loginWithOTP } from '../data'
 import { storeData } from '../components/Storage'
+import Access from '../utils/Access'
 
 export default function OTPScreen({ route, navigation }) {
   const [OTP, setOTP] = useState('')
-
-  // console.log(route && route.params)
 
   const onSubmit = async () => {
     if (OTP) {
@@ -17,16 +16,19 @@ export default function OTPScreen({ route, navigation }) {
 
       if (check) {
         await storeData()
-        return navigation.navigate('Home')
+        return navigation.navigate('HomeButtonTab')
       }
 
       return alert('Invalid OTP')
     }
   }
 
+  useEffect(() => {
+    Access() && navigation.navigate('HomeButtonTab')
+  }, [navigation])
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* <Text>{getData('otp')}</Text> */}
       <Logo />
       <InputComponent
         placeholder='Enter OTP Code'

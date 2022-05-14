@@ -9,6 +9,8 @@ import { Avatar, Text } from 'react-native-paper'
 import { COLORS } from '../constants'
 import * as ImagePicker from 'expo-image-picker'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import Access from '../utils/Access'
 
 const ProfileScreen = () => {
   const [type, setType] = useState('rider')
@@ -21,11 +23,15 @@ const ProfileScreen = () => {
   const [hasGalleryPermission, setHasGalleryPermission] = useState(null)
 
   const onSubmit = () => {
-    console.log('submit')
     type === 'rider' && console.log({ type, name, image })
     type === 'driver' &&
       console.log({ name, type, owner, license, plate, image })
   }
+
+  const navigation = useNavigation()
+  useEffect(() => {
+    !Access() && navigation.navigate('Login')
+  }, [navigation])
 
   useEffect(() => {
     ;(async () => {

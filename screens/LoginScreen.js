@@ -3,12 +3,11 @@ import { useEffect, useState } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ButtonComponent, InputComponent, Logo } from '../components'
-import { getData } from '../components/Storage'
 import { COLORS } from '../constants'
+import Access from '../utils/Access'
 
 export default function LoginScreen() {
   const [mobile, setMobile] = useState('')
-  const [auth, setAuth] = useState('')
 
   const navigation = useNavigation()
 
@@ -19,12 +18,8 @@ export default function LoginScreen() {
   }
 
   useEffect(() => {
-    getData('user').then((res) => {
-      setAuth(res)
-    })
-
-    if (auth) return navigation.navigate('Home')
-  }, [navigation, auth])
+    Access() && navigation.navigate('HomeButtonTab')
+  }, [navigation])
 
   return (
     <SafeAreaView style={styles.container}>

@@ -1,12 +1,12 @@
-import { COLORS } from '../constants'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { COLORS } from '../constants'
 import { Ionicons } from '@expo/vector-icons'
-import ProfileScreen from './ProfileScreen'
-import MapScreen from './MapScreen'
+import ProfileScreen from '../screens/ProfileScreen'
+import MapScreen from '../screens/MapScreen'
 
-const Tab = createBottomTabNavigator()
+export default function ButtonTabNavigator() {
+  const Tab = createBottomTabNavigator()
 
-const HomeScreen = () => {
   return (
     <Tab.Navigator
       initialRouteName={'Map'}
@@ -47,5 +47,3 @@ const HomeScreen = () => {
     </Tab.Navigator>
   )
 }
-
-export default HomeScreen

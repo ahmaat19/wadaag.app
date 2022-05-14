@@ -1,12 +1,12 @@
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { useEffect, useState, useRef } from 'react'
 import { COLORS } from '../constants'
-import { getData } from '../components/Storage'
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+import { getData, removeData } from '../components/Storage'
 import { GOOGLE_MAPS_APIKEY } from '@env'
-import { ButtonComponent, Map } from '../components'
-import { Ionicons } from '@expo/vector-icons'
+import { ButtonComponent, DirectionInfo, Map } from '../components'
 import * as Location from 'expo-location'
+import { useNavigation } from '@react-navigation/native'
+import Access from '../utils/Access'
 
 const MapScreen = () => {
   const [user, setUser] = useState('')
@@ -26,11 +26,11 @@ const MapScreen = () => {
     description: 'Location Permission Not Granted',
   })
 
+  const navigation = useNavigation()
+
   useEffect(() => {
-    getData('user').then((res) => {
-      setUser(res)
-    })
-  }, [])
+    !Access() && navigation.navigate('Login')
+  }, [navigation])
 
   useEffect(() => {
     ;(async () => {
@@ -51,12 +51,18 @@ const MapScreen = () => {
     })()
   }, [])
 
-  const onSubmit = () => {}
+  const onSubmit = () => {
+    if (location.description === 'Temporary location')
+      return alert('Please select your destination location')
+
+    navigation.navigate('Plate')
+
+    // removeData()
+    // navigation.navigate('Login')
+  }
 
   const inputRef = useRef()
   const clearInput = () => {
-    // inputRef.current.value = ''
-    // inputRef.current.refs.textInput = ''
     inputRef.current.clear()
     setLocation({
       location: {
@@ -88,134 +94,23 @@ const MapScreen = () => {
             paddingHorizontal: 20,
           }}
         >
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-            }}
-          >
-            <View
-              style={{
-                width: '20%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                marginBottom: 20,
-                paddingStart: 15,
-              }}
-            >
-              <Ionicons
-                name='radio-button-on'
-                size={24}
-                color={COLORS.secondary}
-              />
-              {[1, 2, 3, 4, 5, 6].map((item) => (
-                <View
-                  key={item}
-                  style={{
-                    width: 1,
-                    height: '5%',
-                    backgroundColor: COLORS.secondary,
-                    marginLeft: 10,
-                    marginRight: 10,
-                  }}
-                />
-              ))}
-              <Ionicons name='pin' size={24} color='red' />
-            </View>
-            <View style={{ width: '80%' }}>
-              <Text style={{ color: COLORS.secondary, fontSize: 10 }}>
-                PICKUP
-              </Text>
-              <Text style={{ color: COLORS.secondary, fontWeight: 'bold' }}>
-                {currentLocation.description}
-              </Text>
-
-              <View
-                style={{
-                  width: '100%',
-                  height: 1,
-                  backgroundColor: COLORS.secondary,
-                  marginVertical: 15,
-                }}
-              />
-              <Text
-                style={{
-                  color: COLORS.secondary,
-                  fontSize: 10,
-                  marginBottom: -10,
-                }}
-              >
-                DESTINATION
-              </Text>
-
-              <View
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <View style={{ width: '70%' }}>
-                  <GooglePlacesAutocomplete
-                    ref={inputRef}
-                    styles={{
-                      container: {
-                        flex: 0,
-                        marginStart: -10,
-                      },
-                      textInputContainer: {
-                        width: '100%',
-                      },
-                      textInput: {
-                        backgroundColor: 'transparent',
-                        borderRadius: 25,
-                        color: COLORS.secondary,
-                        fontWeight: 'bold',
-                      },
-                    }}
-                    query={{
-                      key: GOOGLE_MAPS_APIKEY,
-                      language: 'en',
-                    }}
-                    onPress={(data, details = null) => {
-                      setLocation({
-                        location: details.geometry.location,
-                        description: data.description,
-                      })
-                    }}
-                    fetchDetails={true}
-                    returnKeyType='search'
-                    enablePoweredByContainer={false}
-                    minLength={2}
-                    placeholder='Where To?'
-                    nearbyPlacesAPI='GooglePlacesSearch'
-                    debounce={400}
-                  />
-                </View>
-
-                {location.description !== 'Temporary location' && (
-                  <TouchableOpacity onPress={() => clearInput()}>
-                    <Ionicons name='close' size={24} color='red' />
-                  </TouchableOpacity>
-                )}
-                <View
-                  style={{
-                    width: 1,
-                    height: '40%',
-                    backgroundColor: COLORS.secondary,
-                    marginVertical: 15,
-                  }}
-                />
-                <Ionicons name='map' size={24} color={COLORS.secondary} />
-              </View>
-            </View>
-          </View>
+          <DirectionInfo
+            clearInput={clearInput}
+            inputRef={inputRef}
+            location={location}
+            setLocation={setLocation}
+            GOOGLE_MAPS_APIKEY={GOOGLE_MAPS_APIKEY}
+            currentLocation={currentLocation}
+          />
 
           <View style={{ marginTop: -10 }}>
-            <ButtonComponent title='Next' onPress={onSubmit} />
+            <ButtonComponent
+              title='Next'
+              onPress={onSubmit}
+              disabled={
+                location.description !== 'Temporary location' ? false : true
+              }
+            />
           </View>
         </View>
       </View>
@@ -233,7 +128,6 @@ const styles = StyleSheet.create({
     color: COLORS.secondary,
     alignItems: 'center',
     justifyContent: 'center',
-    // paddingHorizontal: 20,
     position: 'relative',
   },
 })

@@ -1,7 +1,7 @@
 import { View } from 'react-native'
 import { Button } from 'react-native-paper'
 
-const ButtonComponent = ({ title = 'Click', onPress }) => {
+const ButtonComponent = ({ title = 'Click', onPress, disabled = false }) => {
   return (
     <View
       style={{
@@ -18,6 +18,7 @@ const ButtonComponent = ({ title = 'Click', onPress }) => {
           borderRadius: 25,
           backgroundColor: '#262525',
         }}
+        disabled={disabled}
       >
         {title}
       </Button>
